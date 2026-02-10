@@ -1,0 +1,13 @@
+******Valid cases******
+Flag -n: OK
+Flag -b: OK
+Flag -e: OK
+Flag -s: OK
+Flag -t: OK
+Flag --number-nonblank: OK
+Flag -E: OK
+Flag --number: OK
+Flag --squeeze-blank: OK
+Flag -T: OK
+******Without flag******
+Without flag: OK

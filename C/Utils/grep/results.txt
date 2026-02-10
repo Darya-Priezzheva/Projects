@@ -1,0 +1,31 @@
+=======================================
+*************Valid cases***************
+Flag -e: OK
+Flag -i: OK
+Flag -v: OK
+Flag -c: OK
+Flag -l: OK
+Flag -n: OK
+Flag -i: OK
+=======================================
+*************Without flag**************
+Without flag: OK
+=======================================
+**************Bonus flags**************
+Bonus flag -s: OK
+Bonus flag -h: OK
+=======================================
+***********Flag -f from file***********
+From file -f: OK
+=======================================
+***************Flag -o*****************
+From file -o: OK
+=======================================
+*************Combine flags*************
+Combine flags -in: OK
+Combine flags -cv: OK
+Combine flags -il: OK
+Combine flags -hov: OK
+Combine flags -ch: OK
+Combine flags -iv: OK
+Combine flags -cvn: OK
