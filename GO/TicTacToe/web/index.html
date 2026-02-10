@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Крестики-нолики</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        td {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 48px;
+            border: 2px solid #333;
+            cursor: pointer;
+        }
+        button {
+            font-size: 18px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Крестики-нолики</h1>
+
+<button id="startBtn">Начать игру</button>
+
+<table id="board" style="display:none"></table>
+
+<h2 id="status"></h2>
+
+<script>
+    let gameId = null;
+    let field = [
+        [0,0,0],
+        [0,0,0],
+        [0,0,0]
+    ];
+    let gameOver = false;
+
+
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+
+    async function startGame() {
+        const res = await fetch('http://localhost:8080/game/start', {
+            method: 'POST'
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            alert(text);
+            return;
+        }
+
+        const data = await res.json();
+
+        gameId = data.id;
+        field = data.field;
+        gameOver = false;
+
+
+
+
+        board.style.display = 'table';
+        status.textContent = 'Ваш ход';
+
+        renderBoard();
+    }
+
+    function renderBoard() {
+        board.innerHTML = '';
+
+        for (let i = 0; i < 3; i++) {
+            const row = document.createElement('tr');
+
+            for (let j = 0; j < 3; j++) {
+                const cell = document.createElement('td');
+                const val = field[i][j];
+
+                if (val === 1) cell.textContent = 'X';
+                else if (val === -1) cell.textContent = 'O';
+
+                cell.addEventListener('click', () => makeMove(i, j));
+                row.appendChild(cell);
+            }
+
+            board.appendChild(row);
+        }
+    }
+
+    async function makeMove(x, y) {
+        if (field[x][y] !== 0 || !gameId || gameOver) return;
+
+        const newField = field.map(row => row.slice());
+        newField[x][y] = 1;
+
+        const res = await fetch(
+            `http://localhost:8080/game/move?id=${gameId}`,
+            {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    id: gameId,
+                    field: newField
+                })
+            }
+        );
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            alert(errorText);
+            return;
+        }
+
+        const data = await res.json();
+
+        field = data.field;
+        renderBoard();
+
+        if (data.game_over) {
+            gameOver = true;
+            status.textContent = data.winner
+                ? `Победил ${data.winner}`
+                : 'Ничья';
+        } else {
+            status.textContent = 'Ваш ход';
+        }
+    }
+</script>
+
+</body>
+</html>
+
